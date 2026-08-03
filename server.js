@@ -46,7 +46,7 @@ function validateUser(req, res, next) {
 app.use(requestLogger);
 
 
-// Home route
+
 app.get("/", (req, res) => {
   res.send("Welcome to the User Directory API!");
 });
