@@ -1,13 +1,8 @@
 const jwt = require("jsonwebtoken");
+
 const { users, SECRET_KEY } = require("../models/userModel");
+
 const userView = require("../views/userView");
-
-// NEW: Renders the login page template (login.ejs inside views folder)
-const getLoginPage = (req, res) => {
-  res.render("login");
-};
-
-// --- Your Existing Controller Functions ---
 
 const home = (req, res) => {
   userView.homeResponse(res);
@@ -22,6 +17,7 @@ const getUsers = (req, res) => {
 };
 
 const createUser = (req, res) => {
+
   const newUser = {
     id: users.length + 1,
     name: req.body.name
@@ -30,9 +26,11 @@ const createUser = (req, res) => {
   users.push(newUser);
 
   userView.createdUserResponse(res, newUser);
+
 };
 
 const loginUser = (req, res) => {
+
   const { username, password } = req.body;
 
   const user = users.find(
@@ -40,7 +38,9 @@ const loginUser = (req, res) => {
   );
 
   if (!user) {
+
     return userView.loginFailed(res);
+
   }
 
   const payload = {
@@ -53,11 +53,10 @@ const loginUser = (req, res) => {
   });
 
   userView.loginSuccess(res, token);
+
 };
 
-// Exporting both your existing functions and the new getLoginPage function
 module.exports = {
-  getLoginPage,
   home,
   getUsers,
   createUser,
