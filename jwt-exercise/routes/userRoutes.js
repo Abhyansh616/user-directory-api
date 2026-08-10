@@ -11,6 +11,7 @@ const {
 
 const authenticateToken = require("../middleware/authenticateToken");
 const validateUser = require("../middleware/validateUser");
+const loginRateLimiter = require("../middleware/loginRateLimiter");
 
 // GET /login -> Renders the login page using EJS
 router.get("/login", getLoginPage);
@@ -32,6 +33,7 @@ router.post(
 // POST /login -> Handles the login form submission
 router.post(
   "/login",
+  loginRateLimiter,
   loginUser
 );
 

@@ -1,5 +1,3 @@
-const SECRET_KEY = "my_super_secret_key_123";
-
 let users = [
   {
     id: 1,
@@ -16,6 +14,5 @@ let users = [
 ];
 
 module.exports = {
-  users,
-  SECRET_KEY
+  users
 };
