@@ -1,13 +1,13 @@
 const jwt = require("jsonwebtoken");
-const { users, SECRET_KEY } = require("../models/userModel");
+const { users } = require("../models/userModel");
 const userView = require("../views/userView");
 
-// NEW: Renders the login page template (login.ejs inside views folder)
+
 const getLoginPage = (req, res) => {
   res.render("login");
 };
 
-// --- Your Existing Controller Functions ---
+
 
 const home = (req, res) => {
   userView.homeResponse(res);
@@ -48,14 +48,14 @@ const loginUser = (req, res) => {
     username: user.username
   };
 
-  const token = jwt.sign(payload, SECRET_KEY, {
+  const token = jwt.sign(payload, process.env.JWT_SECRET, {
     expiresIn: "1h"
   });
 
   userView.loginSuccess(res, token);
 };
 
-// Exporting both your existing functions and the new getLoginPage function
+
 module.exports = {
   getLoginPage,
   home,
