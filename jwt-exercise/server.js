@@ -1,6 +1,7 @@
 require("dotenv").config();
 
 const express = require("express");
+const mongoose = require("mongoose");
 const path = require("path");
 const helmet = require("helmet");
 const cors = require("cors");
@@ -16,7 +17,7 @@ app.use(helmet());
 
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL
+    origin: process.env.FRONTEND_URL || "*"
   })
 );
 
@@ -39,29 +40,6 @@ app.use(
   })
 );
 
-function sanitizeObject(obj) {
-  if (!obj || typeof obj !== "object") return obj;
-
-  for (const key of Object.keys(obj)) {
-    if (key.startsWith("$") || key.includes(".")) {
-      delete obj[key];
-      continue;
-    }
-
-    if (typeof obj[key] === "object") {
-      sanitizeObject(obj[key]);
-    }
-  }
-
-  return obj;
-}
-
-app.use((req, res, next) => {
-  sanitizeObject(req.body);
-  sanitizeObject(req.params);
-  next();
-});
-
 app.use(express.static(path.join(__dirname, "public")));
 
 app.set("view engine", "ejs");
@@ -77,6 +55,18 @@ app.use((req, res) => {
   });
 });
 
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:3000`);
-});
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then(() => {
+    console.log("Connected to MongoDB Atlas");
+
+    app.listen(PORT, () => {
+      console.log(`Server is running on http://localhost:${PORT}`);
+    });
+  })
+  .catch((error) => {
+    console.error(
+      "MongoDB connection failed:",
+      error.message
+    );
+  });

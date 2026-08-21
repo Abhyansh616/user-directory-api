@@ -1,18 +1,17 @@
-let users = [
-  {
-    id: 1,
-    name: "Alice",
-    username: "admin",
-    password: "password123"
-  },
-  {
-    id: 2,
-    name: "Bob",
-    username: "student",
-    password: "learn2code"
-  }
-];
+const mongoose = require("mongoose");
 
-module.exports = {
-  users
-};
+const userSchema = new mongoose.Schema({
+  username: {
+    type: String,
+    required: true,
+    unique: true
+  },
+  password: {
+    type: String,
+    required: true
+  }
+});
+
+const User = mongoose.model("User", userSchema);
+
+module.exports = User;
