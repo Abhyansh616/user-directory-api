@@ -21,7 +21,13 @@ const getUsers = (req, res) => {
 
 const registerUser = async (req, res) => {
   try {
-    const { username, password } = req.body;
+    const {
+      username,
+      password,
+      role,
+      assignedGrade,
+      studentId
+    } = req.body;
 
     if (!username || !password) {
       return res.status(400).json({
@@ -41,16 +47,23 @@ const registerUser = async (req, res) => {
 
     const user = await User.create({
       username,
-      password: hashedPassword
+      password: hashedPassword,
+      role: role || "student",
+      assignedGrade,
+      studentId
     });
 
     res.status(201).json({
       message: "User registered successfully",
       user: {
         id: user._id,
-        username: user.username
+        username: user.username,
+        role: user.role,
+        assignedGrade: user.assignedGrade,
+        studentId: user.studentId
       }
     });
+
   } catch (error) {
     res.status(500).json({
       error: "Registration failed",
@@ -85,7 +98,10 @@ const loginUser = async (req, res) => {
     const token = jwt.sign(
       {
         id: user._id,
-        username: user.username
+        username: user.username,
+        role: user.role,
+        assignedGrade: user.assignedGrade,
+        studentId: user.studentId
       },
       process.env.JWT_SECRET,
       {
@@ -97,6 +113,7 @@ const loginUser = async (req, res) => {
       message: "Login successful",
       token
     });
+
   } catch (error) {
     res.status(500).json({
       error: "Login failed",

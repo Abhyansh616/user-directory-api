@@ -15,54 +15,80 @@ const {
   getStudents,
   getStudentById,
   updateStudent,
-  deleteStudent
+  deleteStudent,
+  bulkUploadStudents
 } = require("../controllers/studentController");
 
 const authenticateToken = require("../middleware/authenticateToken");
+const authorizeRoles = require("../middleware/authorizeRoles");
+const checkGradeAccess = require("../middleware/checkGradeAccess");
+const checkSelfAccess = require("../middleware/checkSelfAccess");
+const validateRequest = require("../middleware/validateRequest");
 
-// Home
+const {
+  studentSchema
+} = require("../validations/studentValidation");
+
+const loginRateLimiter = require("../middleware/loginRateLimiter");
+
 router.get("/login", getLoginPage);
+
 router.get("/", home);
 
-// Authentication
 router.post("/register", registerUser);
-router.post("/login", loginUser);
 
-// Protected users
+router.post("/login", loginRateLimiter, loginUser);
+
 router.get(
   "/users",
   authenticateToken,
   getUsers
 );
 
-// Student CRUD
 router.post(
   "/students",
   authenticateToken,
+  authorizeRoles("admin", "teacher"),
+  validateRequest(studentSchema),
   createStudent
+);
+
+router.post(
+  "/students/bulk-upload",
+  authenticateToken,
+  authorizeRoles("admin"),
+  bulkUploadStudents
 );
 
 router.get(
   "/students",
   authenticateToken,
+  authorizeRoles("admin", "teacher"),
   getStudents
 );
 
 router.get(
   "/students/:id",
   authenticateToken,
+  authorizeRoles("admin", "teacher", "student"),
+  checkGradeAccess,
+  checkSelfAccess,
   getStudentById
 );
 
 router.put(
   "/students/:id",
   authenticateToken,
+  authorizeRoles("admin", "teacher"),
+  validateRequest(studentSchema),
+  checkGradeAccess,
   updateStudent
 );
 
 router.delete(
   "/students/:id",
   authenticateToken,
+  authorizeRoles("admin"),
   deleteStudent
 );
 

@@ -6,9 +6,25 @@ const userSchema = new mongoose.Schema({
     required: true,
     unique: true
   },
+
   password: {
     type: String,
     required: true
+  },
+
+  role: {
+    type: String,
+    enum: ["admin", "teacher", "student"],
+    default: "student"
+  },
+
+  assignedGrade: {
+    type: String
+  },
+
+  studentId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Student"
   }
 });
 

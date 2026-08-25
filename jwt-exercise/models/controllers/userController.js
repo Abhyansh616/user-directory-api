@@ -129,9 +129,12 @@ const loginUser = async (req, res) => {
     }
 
     const payload = {
-      id: user._id,
-      username: user.username
-    };
+    id: user._id,
+    username: user.username,
+    role: user.role,
+    assignedGrade: user.assignedGrade,
+    studentId: user.studentId
+   };
 
     const token = jwt.sign(
       payload,

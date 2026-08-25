@@ -132,11 +132,36 @@ const deleteStudent = async (req, res) => {
     });
   }
 };
+const bulkUploadStudents = async (req, res) => {
+  try {
+    const students = req.body.students;
+
+    if (!Array.isArray(students) || students.length === 0) {
+      return res.status(400).json({
+        error: "students must be a non-empty array"
+      });
+    }
+
+    const createdStudents = await Student.insertMany(students);
+
+    res.status(201).json({
+      message: "Students uploaded successfully",
+      count: createdStudents.length,
+      students: createdStudents
+    });
+  } catch (error) {
+    res.status(500).json({
+      error: "Bulk upload failed",
+      message: error.message
+    });
+  }
+};
 
 module.exports = {
   createStudent,
   getStudents,
   getStudentById,
   updateStudent,
-  deleteStudent
+  deleteStudent,
+  bulkUploadStudents
 };
