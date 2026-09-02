@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Bulk Upload Socket Test</title>
+</head>
+<body>
+  <h1>Bulk Upload Socket Test</h1>
+
+  <p>
+    Socket ID:
+    <strong id="socketId">Connecting...</strong>
+  </p>
+
+  <h2>Progress</h2>
+
+  <pre id="progress">Waiting for upload...</pre>
+
+  <script src="/socket.io/socket.io.js"></script>
+
+  <script>
+    const socket = io();
+
+    socket.on("connect", () => {
+      console.log("Connected to Socket.IO");
+      console.log("Socket ID:", socket.id);
+
+      document.getElementById("socketId").textContent = socket.id;
+    });
+
+    socket.on("upload_progress", (data) => {
+      console.log("Upload progress:", data);
+
+      document.getElementById("progress").textContent =
+        JSON.stringify(data, null, 2);
+    });
+
+    socket.on("upload_complete", (data) => {
+      console.log("Upload complete:", data);
+
+      document.getElementById("progress").textContent =
+        JSON.stringify(data, null, 2);
+    });
+
+    socket.on("disconnect", () => {
+      console.log("Disconnected from Socket.IO");
+
+      document.getElementById("socketId").textContent =
+        "Disconnected";
+    });
+  </script>
+</body>
+</html>

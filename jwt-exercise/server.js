@@ -3,12 +3,32 @@ require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const path = require("path");
+const http = require("http");
 const helmet = require("helmet");
 const cors = require("cors");
 const rateLimit = require("express-rate-limit");
+const { Server } = require("socket.io");
 
 const app = express();
+const server = http.createServer(app);
+
 const PORT = process.env.PORT || 3000;
+
+const io = new Server(server, {
+  cors: {
+    origin: process.env.FRONTEND_URL || "*"
+  }
+});
+
+app.set("io", io);
+
+io.on("connection", (socket) => {
+  console.log(`Socket connected: ${socket.id}`);
+
+  socket.on("disconnect", () => {
+    console.log(`Socket disconnected: ${socket.id}`);
+  });
+});
 
 const requestLogger = require("./middleware/requestLogger");
 const userRoutes = require("./routes/userRoutes");
@@ -60,7 +80,7 @@ mongoose
   .then(() => {
     console.log("Connected to MongoDB Atlas");
 
-    app.listen(PORT, () => {
+    server.listen(PORT, () => {
       console.log(`Server is running on http://localhost:${PORT}`);
     });
   })

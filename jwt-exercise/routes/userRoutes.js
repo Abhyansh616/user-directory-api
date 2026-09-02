@@ -1,4 +1,5 @@
 const express = require("express");
+const multer = require("multer");
 
 const router = express.Router();
 
@@ -21,6 +22,7 @@ const {
 
 const authenticateToken = require("../middleware/authenticateToken");
 const authorizeRoles = require("../middleware/authorizeRoles");
+const csvUpload = require("../middleware/csvUpload");
 const checkGradeAccess = require("../middleware/checkGradeAccess");
 const checkSelfAccess = require("../middleware/checkSelfAccess");
 const validateRequest = require("../middleware/validateRequest");
@@ -57,6 +59,31 @@ router.post(
   "/students/bulk-upload",
   authenticateToken,
   authorizeRoles("admin"),
+  (req, res, next) => {
+    csvUpload.single("file")(req, res, (error) => {
+      if (error instanceof multer.MulterError) {
+        return res.status(400).json({
+          error: "File upload failed",
+          message: error.message
+        });
+      }
+
+      if (error) {
+        return res.status(400).json({
+          error: "Invalid file upload",
+          message: error.message
+        });
+      }
+
+      if (!req.file) {
+        return res.status(400).json({
+          error: "CSV file is required"
+        });
+      }
+
+      next();
+    });
+  },
   bulkUploadStudents
 );
 
